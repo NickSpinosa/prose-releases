@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prose: a writing app for novelists</title>
+<meta name="description" content="Prose is a fast, native desktop app for writing books. Download the Windows beta.">
+<meta property="og:title" content="Prose">
+<meta property="og:description" content="A fast, native desktop app for writing books. Windows beta available now.">
+<meta property="og:image" content="assets/screenshot-dark.png">
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #f7f4ee;
+    --fg: #2b2620;
+    --muted: #6d655a;
+    --line: #e2dbcf;
+    --card: #fffdf9;
+    --accent: #8a4b2a;
+    --accent-fg: #fffaf3;
+    --note-bg: #f3ece0;
+    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+    --sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1b1a20;
+      --fg: #e8e3da;
+      --muted: #a39d93;
+      --line: #34323b;
+      --card: #232229;
+      --accent: #e0a17a;
+      --accent-fg: #1b1a20;
+      --note-bg: #26252c;
+    }
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font: 18px/1.6 var(--serif);
+  }
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 0 20px; }
+  header.top { display: flex; align-items: center; justify-content: space-between; padding: 22px 0; }
+  .wordmark { font-size: 24px; letter-spacing: .01em; font-style: italic; }
+  .top a { color: var(--muted); font: 15px var(--sans); text-decoration: none; }
+  .top a:hover { color: var(--fg); }
+
+  .hero { padding: 56px 0 40px; text-align: center; }
+  .hero h1 { font-size: clamp(36px, 6vw, 60px); line-height: 1.1; font-weight: 500; margin: 0 0 18px; letter-spacing: -.01em; }
+  .hero p.lede { font-size: clamp(18px, 2.2vw, 21px); color: var(--muted); max-width: 620px; margin: 0 auto 34px; }
+
+  .download { display: inline-flex; flex-direction: column; align-items: center; gap: 10px; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 12px;
+    background: var(--accent); color: var(--accent-fg);
+    font: 600 17px var(--sans); text-decoration: none;
+    padding: 15px 26px; border-radius: 10px;
+    transition: transform .08s ease, filter .15s ease;
+  }
+  .btn:hover { filter: brightness(1.07); }
+  .btn:active { transform: translateY(1px); }
+  .btn svg { width: 20px; height: 20px; flex: none; }
+  .meta { font: 14px var(--sans); color: var(--muted); }
+  .meta a { color: inherit; }
+
+  .shot { margin: 48px auto 0; max-width: 900px; }
+  .shot img {
+    display: block; width: 100%; height: auto;
+    border-radius: 10px; border: 1px solid var(--line);
+    box-shadow: 0 24px 60px -24px rgba(0,0,0,.35);
+  }
+
+  section.features { padding: 72px 0 24px; }
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 34px 40px; }
+  .grid h3 { font: 600 16px var(--sans); margin: 0 0 6px; }
+  .grid p { margin: 0; color: var(--muted); font-size: 17px; }
+
+  section.install { padding: 56px 0 24px; }
+  .install h2, .features h2 { font-weight: 500; font-size: 30px; margin: 0 0 22px; }
+  .notes { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .note { background: var(--note-bg); border: 1px solid var(--line); border-radius: 10px; padding: 20px 22px; }
+  .note h3 { font: 600 16px var(--sans); margin: 0 0 8px; }
+  .note p, .note li { font-size: 17px; margin: 0; color: var(--fg); }
+  .note ol { margin: 0; padding-left: 20px; }
+  .note li + li { margin-top: 4px; }
+  kbd, .ui { font: 600 14px var(--sans); background: var(--card); border: 1px solid var(--line); border-radius: 5px; padding: 1px 6px; white-space: nowrap; }
+
+  footer { padding: 56px 0 40px; color: var(--muted); font: 14px var(--sans); text-align: center; }
+  footer a { color: inherit; }
+
+  @media (max-width: 760px) {
+    .grid { grid-template-columns: 1fr 1fr; }
+    .notes { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 500px) {
+    body { font-size: 17px; }
+    .wrap { padding: 0 16px; }
+    .grid { grid-template-columns: 1fr; gap: 24px; }
+    .hero { padding-top: 32px; }
+    .btn { width: 100%; justify-content: center; }
+    .download { display: flex; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="wordmark">Prose</div>
+    <a href="https://github.com/NickSpinosa/prose-releases/releases">All releases</a>
+  </header>
+
+  <main>
+    <section class="hero">
+      <h1>A quiet, fast place<br>to write your book.</h1>
+      <p class="lede">Prose is a native desktop app for novelists. Keep the whole manuscript, your notes and your research in one project, and write without the app getting in your way.</p>
+
+      <div class="download">
+        <a class="btn" id="dl" href="https://github.com/NickSpinosa/prose-releases/releases/download/v0.2.0-beta.1/Prose-win-beta-Setup.exe">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
+          Download for Windows
+        </a>
+        <div class="meta"><span id="ver">Beta 0.2.0-beta.1</span> · Windows 10 and 11 · <a id="notes" href="https://github.com/NickSpinosa/prose-releases/releases/tag/v0.2.0-beta.1">Release notes</a></div>
+        <div class="meta">Mac version coming later.</div>
+      </div>
+
+      <div class="shot">
+        <picture>
+          <source srcset="assets/screenshot-dark.png" media="(prefers-color-scheme: dark)">
+          <img src="assets/screenshot-light.png" width="900" height="700" alt="Prose with a chapter open: the binder on the left, the text in the middle and a margin comment on the right.">
+        </picture>
+      </div>
+    </section>
+
+    <section class="features">
+      <h2>Made for long books</h2>
+      <div class="grid">
+        <div><h3>The whole book in one place</h3><p>Chapters, scenes, notes and research live in a binder you can rearrange, split and merge. Read it all as one continuous text when you want to.</p></div>
+        <div><h3>Fast at any length</h3><p>Built natively, not in a browser. Typing stays instant even in a manuscript of 300,000 words.</p></div>
+        <div><h3>Every version kept</h3><p>Prose saves as you type and keeps a dated history of your work. Compare any two versions, or go back to one.</p></div>
+        <div><h3>Comments and notes</h3><p>Leave yourself comments in the margin, add footnotes, and keep research files, images and PDFs beside the text.</p></div>
+        <div><h3>Ready for submission</h3><p>Compile to a standard manuscript in DOCX, RTF or PDF, or to an EPUB, with the layout you choose.</p></div>
+        <div><h3>Yours to shape</h3><p>Light and dark themes, split panes, optional Vim keys, and every setting and shortcut in plain text files.</p></div>
+      </div>
+    </section>
+
+    <section class="install">
+      <h2>Installing the beta</h2>
+      <div class="notes">
+        <div class="note">
+          <h3>If Windows warns you</h3>
+          <ol>
+            <li>The beta isn't code signed yet, so Windows may show <span class="ui">Windows protected your PC</span>.</li>
+            <li>Click <span class="ui">More info</span>, then <span class="ui">Run anyway</span>.</li>
+          </ol>
+        </div>
+        <div class="note">
+          <h3>What to expect</h3>
+          <p>Setup installs Prose for your account only, with no admin rights needed, and adds it to the Start menu. Prose updates itself when a new version is out, and you can check any time from <span class="ui">Help › Check for Updates</span>.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    Prose is in beta. Thanks for trying it.
+  </footer>
+</div>
+
+<script>
+  // Point the button at the newest v* release that has a Setup.exe, prereleases
+  // included (GitHub's /releases/latest skips prereleases). The links above work
+  // without this if the API is unreachable or rate limited.
+  fetch("https://api.github.com/repos/NickSpinosa/prose-releases/releases?per_page=20")
+    .then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); })
+    .then(function (releases) {
+      for (var i = 0; i < releases.length; i++) {
+        var rel = releases[i];
+        if (rel.draft || !/^v\d/.test(rel.tag_name)) continue;
+        var asset = (rel.assets || []).find(function (a) { return /^Prose-win-.*-Setup\.exe$/.test(a.name); });
+        if (!asset) continue;
+        var v = rel.tag_name.replace(/^v/, "");
+        document.getElementById("dl").href = asset.browser_download_url;
+        document.getElementById("notes").href = rel.html_url;
+        document.getElementById("ver").textContent = (rel.prerelease ? "Beta " : "Version ") + v;
+        return;
+      }
+    })
+    .catch(function () {});
+</script>
+</body>
+</html>
