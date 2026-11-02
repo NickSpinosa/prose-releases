@@ -1,0 +1,91 @@
+# Builds Prose for Windows from the private source repository, packs it with
+# Velopack, signs the update feed and publishes it to this repository's
+# releases, with `cargo xtask release-windows` (docs/packaging.md in the
+# source repository).
+#
+# Runs only when started by hand (`release.bat` in the source repository
+# starts it with `gh workflow run`). Never on pushes or pull requests: this
+# repository is public, so its logs are too, and only people with write
+# access can start a manual run.
+#
+# Needs, in the `release` environment:
+#   PROSE_SOURCE_KEY  read-only deploy key of NickSpinosa/prose (SSH, private half)
+#   PROSE_UPDATE_KEY  the feed signing key (Ed25519 PEM)
+# `packaging/setup-release-ci.bat` in the source repository sets both.
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: Commit, branch or tag of NickSpinosa/prose to release
+        required: true
+        default: main
+      publish:
+        description: Upload the release (off is a dry run that only builds and packs)
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+# One release at a time: two would race on the feed.
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+env:
+  CARGO_TERM_COLOR: always
+  CARGO_NET_GIT_FETCH_WITH_CLI: true
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    environment: release
+    timeout-minutes: 90
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: NickSpinosa/prose
+          ref: ${{ inputs.ref }}
+          ssh-key: ${{ secrets.PROSE_SOURCE_KEY }}
+          persist-credentials: false
+      # No build cache on purpose: in a public repository, pull requests from
+      # forks can read the caches, and the build folder of private source
+      # should not be readable that way.
+      - run: rustup toolchain install --profile minimal
+      - name: Install vpk
+        run: |
+          dotnet tool install -g vpk --version 1.2.161
+          echo "$USERPROFILE/.dotnet/tools" >> "$GITHUB_PATH"
+      - name: Signing key
+        if: inputs.publish
+        env:
+          KEY: ${{ secrets.PROSE_UPDATE_KEY }}
+        run: |
+          if [[ -z "$KEY" ]]; then
+            echo "::error::PROSE_UPDATE_KEY is not set in the release environment"
+            exit 1
+          fi
+          printf '%s\n' "$KEY" > "$RUNNER_TEMP/prose-update.pem"
+      - name: Build, pack and publish
+        if: inputs.publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cargo xtask release-windows --publish \
+            --key "$RUNNER_TEMP/prose-update.pem" \
+            --repo "$GITHUB_REPOSITORY"
+      # A dry run builds and packs against an empty feed, so it works for a
+      # version that is already published, and uploads nothing.
+      - name: Build and pack (dry run)
+        if: ${{ !inputs.publish }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/empty-feed"
+          cargo xtask release-windows --unsigned --feed "$RUNNER_TEMP/empty-feed"
+      - name: Remove the signing key
+        if: always()
+        run: rm -f "$RUNNER_TEMP/prose-update.pem"
