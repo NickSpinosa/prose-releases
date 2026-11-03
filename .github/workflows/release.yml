@@ -1,7 +1,8 @@
-# Builds Prose for Windows from the private source repository, packs it with
-# Velopack, signs the update feed and publishes it to this repository's
-# releases, with `cargo xtask release-windows` (docs/packaging.md in the
-# source repository).
+# Builds Prose for Windows and macOS from the private source repository, packs
+# it with Velopack, signs the update feeds and publishes them to this
+# repository's releases, with `cargo xtask release-windows` and
+# `cargo xtask release-macos` (docs/packaging.md in the source repository).
+# The two jobs run side by side and publish to the same `v{version}` release.
 #
 # Runs only when started by hand (`release.bat` in the source repository
 # starts it with `gh workflow run`). Never on pushes or pull requests: this
@@ -29,7 +30,7 @@ on:
 permissions:
   contents: write
 
-# One release at a time: two would race on the feed.
+# One release at a time: two would race on the feeds.
 concurrency:
   group: release
   cancel-in-progress: false
@@ -86,6 +87,73 @@ jobs:
         run: |
           mkdir -p "$RUNNER_TEMP/empty-feed"
           cargo xtask release-windows --unsigned --feed "$RUNNER_TEMP/empty-feed"
+      - name: Remove the signing key
+        if: always()
+        run: rm -f "$RUNNER_TEMP/prose-update.pem"
+
+  # A universal (Apple silicon and Intel) Prose.app, as Setup.pkg and
+  # Portable.zip, on the osx-beta or osx-stable channel. Not signed by Apple
+  # until the Developer ID secrets exist (docs/packaging.md).
+  macos:
+    runs-on: macos-14
+    environment: release
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: NickSpinosa/prose
+          ref: ${{ inputs.ref }}
+          ssh-key: ${{ secrets.PROSE_SOURCE_KEY }}
+          persist-credentials: false
+      # No build cache, as on Windows.
+      - run: rustup toolchain install --profile minimal
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+      - name: Install vpk
+        run: |
+          dotnet tool install -g vpk --version 1.2.161
+          echo "$HOME/.dotnet/tools" >> "$GITHUB_PATH"
+      - name: Signing key
+        if: inputs.publish
+        env:
+          KEY: ${{ secrets.PROSE_UPDATE_KEY }}
+        run: |
+          if [[ -z "$KEY" ]]; then
+            echo "::error::PROSE_UPDATE_KEY is not set in the release environment"
+            exit 1
+          fi
+          printf '%s\n' "$KEY" > "$RUNNER_TEMP/prose-update.pem"
+      - name: Build, pack and publish
+        if: inputs.publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          echo "::warning::No Apple Developer ID yet: the Mac app and installer are unsigned"
+          cargo xtask release-macos --publish \
+            --key "$RUNNER_TEMP/prose-update.pem" \
+            --repo "$GITHUB_REPOSITORY"
+      - name: Build and pack (dry run)
+        if: ${{ !inputs.publish }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/empty-feed"
+          cargo xtask release-macos --unsigned --feed "$RUNNER_TEMP/empty-feed"
+      # Install the dry run's package on the runner and start the app once,
+      # the way a tester would (minus Gatekeeper).
+      - name: Try the installer (dry run)
+        if: ${{ !inputs.publish }}
+        run: |
+          ls -l out/velopack/releases
+          pkg=$(ls out/velopack/releases/*-Setup.pkg)
+          pkgutil --check-signature "$pkg" || true
+          sudo installer -pkg "$pkg" -target /
+          app=/Applications/Prose.app
+          ls -l "$app/Contents/MacOS"
+          plutil -p "$app/Contents/Info.plist"
+          lipo -info "$app/Contents/MacOS/prose"
+          codesign -dv --verbose=2 "$app" || true
+          codesign --verify --deep --strict --verbose=2 "$app" || true
+          "$app/Contents/MacOS/prose" --version
       - name: Remove the signing key
         if: always()
         run: rm -f "$RUNNER_TEMP/prose-update.pem"
