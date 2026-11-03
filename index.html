@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Prose: a writing app for novelists</title>
-<meta name="description" content="Prose is a fast, native desktop app for writing books. Download the Windows beta.">
+<meta name="description" content="Prose is a fast, native desktop app for writing books. Download the beta for Windows or Mac.">
 <meta property="og:title" content="Prose">
-<meta property="og:description" content="A fast, native desktop app for writing books. Windows beta available now.">
+<meta property="og:description" content="A fast, native desktop app for writing books. Beta for Windows and Mac available now.">
 <meta property="og:image" content="assets/screenshot-dark.png">
 <style>
   :root {
@@ -52,7 +52,8 @@
   .hero h1 { font-size: clamp(36px, 6vw, 60px); line-height: 1.1; font-weight: 500; margin: 0 0 18px; letter-spacing: -.01em; }
   .hero p.lede { font-size: clamp(18px, 2.2vw, 21px); color: var(--muted); max-width: 620px; margin: 0 auto 34px; }
 
-  .download { display: inline-flex; flex-direction: column; align-items: center; gap: 10px; }
+  .download { display: inline-flex; flex-direction: column; align-items: center; gap: 12px; }
+  .buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
   .btn {
     display: inline-flex; align-items: center; gap: 12px;
     background: var(--accent); color: var(--accent-fg);
@@ -63,6 +64,9 @@
   .btn:hover { filter: brightness(1.07); }
   .btn:active { transform: translateY(1px); }
   .btn svg { width: 20px; height: 20px; flex: none; }
+  .btn.secondary { background: transparent; color: var(--fg); box-shadow: inset 0 0 0 1.5px var(--line); }
+  .btn.secondary:hover { filter: none; box-shadow: inset 0 0 0 1.5px var(--muted); }
+  .btn[hidden] { display: none; }
   .meta { font: 14px var(--sans); color: var(--muted); }
   .meta a { color: inherit; }
 
@@ -80,7 +84,7 @@
 
   section.install { padding: 56px 0 24px; }
   .install h2, .features h2 { font-weight: 500; font-size: 30px; margin: 0 0 22px; }
-  .notes { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .notes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
   .note { background: var(--note-bg); border: 1px solid var(--line); border-radius: 10px; padding: 20px 22px; }
   .note h3 { font: 600 16px var(--sans); margin: 0 0 8px; }
   .note p, .note li { font-size: 17px; margin: 0; color: var(--fg); }
@@ -101,6 +105,7 @@
     .grid { grid-template-columns: 1fr; gap: 24px; }
     .hero { padding-top: 32px; }
     .btn { width: 100%; justify-content: center; }
+    .buttons { flex-direction: column; width: 100%; }
     .download { display: flex; }
   }
 </style>
@@ -118,12 +123,18 @@
       <p class="lede">Prose is a native desktop app for novelists. Keep the whole manuscript, your notes and your research in one project, and write without the app getting in your way.</p>
 
       <div class="download">
-        <a class="btn" id="dl" href="https://github.com/NickSpinosa/prose-releases/releases/download/v0.2.0-beta.1/Prose-win-beta-Setup.exe">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
-          Download for Windows
-        </a>
-        <div class="meta"><span id="ver">Beta 0.2.0-beta.1</span> · Windows 10 and 11 · <a id="notes" href="https://github.com/NickSpinosa/prose-releases/releases/tag/v0.2.0-beta.1">Release notes</a></div>
-        <div class="meta">Mac version coming later.</div>
+        <div class="buttons" id="buttons">
+          <a class="btn" id="dl-win" href="https://github.com/NickSpinosa/prose-releases/releases/download/v0.2.0-beta.3/Prose-win-beta-Setup.exe">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
+            Download for Windows
+          </a>
+          <a class="btn secondary" id="dl-mac" href="https://github.com/NickSpinosa/prose-releases/releases">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
+            Download for Mac
+          </a>
+        </div>
+        <div class="meta"><span id="ver">Beta 0.2.0-beta.3</span> · Windows 10 and 11 · macOS 11 or later, Apple silicon and Intel · <a id="notes" href="https://github.com/NickSpinosa/prose-releases/releases/tag/v0.2.0-beta.3">Release notes</a></div>
+        <div class="meta" id="mac-later" hidden>The Mac version arrives with the next release.</div>
       </div>
 
       <div class="shot">
@@ -157,8 +168,16 @@
           </ol>
         </div>
         <div class="note">
+          <h3>If your Mac won't open it</h3>
+          <ol>
+            <li>The beta isn't signed by Apple yet, so macOS says it can't verify the installer. Click <span class="ui">Done</span>.</li>
+            <li>Open <span class="ui">System Settings › Privacy &amp; Security</span>, scroll down and click <span class="ui">Open Anyway</span>.</li>
+            <li>On macOS 14 or earlier you can instead Control-click the file and choose <span class="ui">Open</span>.</li>
+          </ol>
+        </div>
+        <div class="note">
           <h3>What to expect</h3>
-          <p>Setup installs Prose for your account only, with no admin rights needed, and adds it to the Start menu. Prose updates itself when a new version is out, and you can check any time from <span class="ui">Help › Check for Updates</span>.</p>
+          <p>On Windows, Setup installs Prose for your account only, with no admin rights needed. On a Mac, the installer puts Prose in Applications. Prose updates itself when a new version is out, and you can check any time from <span class="ui">Help › Check for Updates</span>.</p>
         </div>
       </div>
     </section>
@@ -170,25 +189,51 @@
 </div>
 
 <script>
-  // Point the button at the newest v* release that has a Setup.exe, prereleases
-  // included (GitHub's /releases/latest skips prereleases). The links above work
+  // Point each button at the newest v* release that has that platform's
+  // installer, prereleases included (GitHub's /releases/latest skips
+  // prereleases), and lead with the visitor's platform. The links above work
   // without this if the API is unreachable or rate limited.
-  fetch("https://api.github.com/repos/NickSpinosa/prose-releases/releases?per_page=20")
-    .then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); })
-    .then(function (releases) {
-      for (var i = 0; i < releases.length; i++) {
-        var rel = releases[i];
-        if (rel.draft || !/^v\d/.test(rel.tag_name)) continue;
-        var asset = (rel.assets || []).find(function (a) { return /^Prose-win-.*-Setup\.exe$/.test(a.name); });
-        if (!asset) continue;
-        var v = rel.tag_name.replace(/^v/, "");
-        document.getElementById("dl").href = asset.browser_download_url;
-        document.getElementById("notes").href = rel.html_url;
-        document.getElementById("ver").textContent = (rel.prerelease ? "Beta " : "Version ") + v;
-        return;
-      }
-    })
-    .catch(function () {});
+  (function () {
+    var platform = ((navigator.userAgentData && navigator.userAgentData.platform) || navigator.platform || navigator.userAgent || "").toLowerCase();
+    var mac = /mac/.test(platform) && !/iphone|ipad/.test(navigator.userAgent.toLowerCase());
+    var win = document.getElementById("dl-win");
+    var macBtn = document.getElementById("dl-mac");
+    if (mac) {
+      win.classList.add("secondary");
+      macBtn.classList.remove("secondary");
+      win.parentNode.insertBefore(macBtn, win);
+    }
+
+    var installers = [
+      { btn: win, pattern: /^Prose-win-.*-Setup\.exe$/ },
+      { btn: macBtn, pattern: /^Prose-osx-.*-Setup\.pkg$/ }
+    ];
+    fetch("https://api.github.com/repos/NickSpinosa/prose-releases/releases?per_page=30")
+      .then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); })
+      .then(function (releases) {
+        releases = releases.filter(function (rel) { return !rel.draft && /^v\d/.test(rel.tag_name); });
+        installers.forEach(function (it) {
+          for (var i = 0; i < releases.length; i++) {
+            var asset = (releases[i].assets || []).find(function (a) { return it.pattern.test(a.name); });
+            if (asset) { it.btn.href = asset.browser_download_url; it.release = releases[i]; return; }
+          }
+        });
+        // Until a release has a Mac installer, say so instead of linking to nothing.
+        if (!installers[1].release) {
+          macBtn.hidden = true;
+          if (mac) win.classList.remove("secondary");
+          document.getElementById("mac-later").hidden = false;
+        }
+        // The version and notes shown are the visitor's platform's, else Windows'.
+        var shown = (mac ? installers[1] : installers[0]).release || installers[0].release;
+        if (shown) {
+          var v = shown.tag_name.replace(/^v/, "");
+          document.getElementById("notes").href = shown.html_url;
+          document.getElementById("ver").textContent = (shown.prerelease ? "Beta " : "Version ") + v;
+        }
+      })
+      .catch(function () {});
+  })();
 </script>
 </body>
 </html>
